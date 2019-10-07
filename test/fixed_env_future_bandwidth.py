@@ -9,9 +9,9 @@ MILLISECONDS_IN_SECOND = 1000.0
 B_IN_MB = 1000000.0
 BITS_IN_BYTE = 8.0
 RANDOM_SEED = 42
-VIDEO_CHUNCK_LEN = 4000.0  # millisec, every time add this amount to buffer
+VIDEO_CHUNK_LEN = 4000.0  # millisec, every time add this amount to buffer
 BITRATE_LEVELS = 6
-TOTAL_VIDEO_CHUNCK = 48
+TOTAL_VIDEO_CHUNK = 48
 BUFFER_THRESH = 60.0 * MILLISECONDS_IN_SECOND  # millisec, max buffer limit
 DRAIN_BUFFER_SLEEP_TIME = 500.0  # millisec
 PACKET_PAYLOAD_PORTION = 0.95
@@ -44,7 +44,7 @@ class Environment:
         self.last_mahimahi_time = self.cooked_time[self.mahimahi_ptr - 1]
 
         self.video_size = {}  # in bytes
-        for bitrate in xrange(BITRATE_LEVELS):
+        for bitrate in range(BITRATE_LEVELS):
             self.video_size[bitrate] = []
             with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
                 for line in f:
@@ -65,8 +65,9 @@ class Environment:
         while True:  # download video chunk over mahimahi
             throughput = self.cooked_bw[self.virtual_mahimahi_ptr] \
                          * B_IN_MB / BITS_IN_BYTE
-            duration = self.cooked_time[self.virtual_mahimahi_ptr] \
-                       - self.virtual_last_mahimahi_time
+            duration =\
+                self.cooked_time[self.virtual_mahimahi_ptr] \
+                - self.virtual_last_mahimahi_time
 
             packet_payload = throughput * duration * PACKET_PAYLOAD_PORTION
 
@@ -105,8 +106,9 @@ class Environment:
         while True:  # download video chunk over mahimahi
             throughput = self.cooked_bw[self.mahimahi_ptr] \
                          * B_IN_MB / BITS_IN_BYTE
-            duration = self.cooked_time[self.mahimahi_ptr] \
-                       - self.last_mahimahi_time
+            duration =\
+                self.cooked_time[self.mahimahi_ptr] \
+                - self.last_mahimahi_time
 
             packet_payload = throughput * duration * PACKET_PAYLOAD_PORTION
 
@@ -139,7 +141,7 @@ class Environment:
         self.buffer_size = np.maximum(self.buffer_size - delay, 0.0)
 
         # add in the new chunk
-        self.buffer_size += VIDEO_CHUNCK_LEN
+        self.buffer_size += VIDEO_CHUNK_LEN
 
         # sleep if buffer gets too large
         sleep_time = 0
@@ -148,8 +150,9 @@ class Environment:
             # we need to skip some network bandwidth here
             # but do not add up the delay
             drain_buffer_time = self.buffer_size - BUFFER_THRESH
-            sleep_time = np.ceil(drain_buffer_time / DRAIN_BUFFER_SLEEP_TIME) * \
-                         DRAIN_BUFFER_SLEEP_TIME
+            sleep_time =\
+                np.ceil(drain_buffer_time / DRAIN_BUFFER_SLEEP_TIME) * \
+                DRAIN_BUFFER_SLEEP_TIME
             self.buffer_size -= sleep_time
 
             while True:
@@ -175,10 +178,10 @@ class Environment:
         return_buffer_size = self.buffer_size
 
         self.video_chunk_counter += 1
-        video_chunk_remain = TOTAL_VIDEO_CHUNCK - self.video_chunk_counter
+        video_chunk_remain = TOTAL_VIDEO_CHUNK - self.video_chunk_counter
 
         end_of_video = False
-        if self.video_chunk_counter >= TOTAL_VIDEO_CHUNCK:
+        if self.video_chunk_counter >= TOTAL_VIDEO_CHUNK:
             end_of_video = True
             self.buffer_size = 0
             self.video_chunk_counter = 0

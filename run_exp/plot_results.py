@@ -10,7 +10,7 @@ MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
 VIDEO_LEN = 64
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
-COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
+COLOR_MAP = plt.cm.jet  # nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 
@@ -38,7 +38,7 @@ def main():
 		bw = []
 		reward = []
 
-		print log_file
+		print(log_file)
 
 		with open(RESULTS_FOLDER + log_file, 'rb') as f:
 			if SIM_DP in log_file:
@@ -68,10 +68,10 @@ def main():
 			bit_rate = bit_rate[::-1]
 			buff = buff[::-1]
 			bw = bw[::-1]
-		
+
 		time_ms = np.array(time_ms)
 		time_ms -= time_ms[0]
-		
+
 		# print log_file
 
 		for scheme in SCHEMES:
@@ -86,7 +86,7 @@ def main():
 	# ---- ---- ---- ----
 	# Reward records
 	# ---- ---- ---- ----
-		
+
 	log_file_all = []
 	reward_all = {}
 	for scheme in SCHEMES:
@@ -115,23 +115,23 @@ def main():
 
 	for scheme in SCHEMES:
 		ax.plot(reward_all[scheme])
-	
+
 	SCHEMES_REW = []
 	for scheme in SCHEMES:
 		SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme]))
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
+	for i, j in enumerate(ax.lines):
 		j.set_color(colors[i])
 
 	ax.legend(SCHEMES_REW, loc=4)
-	
+
 	plt.ylabel('total reward')
 	plt.xlabel('trace index')
 	plt.show()
 
 	# ---- ---- ---- ----
-	# CDF 
+	# CDF
 	# ---- ---- ---- ----
 
 	fig = plt.figure()
@@ -140,18 +140,17 @@ def main():
 	for scheme in SCHEMES:
 		values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
 		cumulative = np.cumsum(values)
-		ax.plot(base[:-1], cumulative)	
+		ax.plot(base[:-1], cumulative)
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
-		j.set_color(colors[i])	
+	for i, j in enumerate(ax.lines):
+		j.set_color(colors[i])
 
 	ax.legend(SCHEMES_REW, loc=4)
-	
+
 	plt.ylabel('CDF')
 	plt.xlabel('total reward')
 	plt.show()
-
 
 	# ---- ---- ---- ----
 	# check each trace
@@ -170,8 +169,8 @@ def main():
 			for scheme in SCHEMES:
 				ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
+			for i, j in enumerate(ax.lines):
+				j.set_color(colors[i])
 			plt.title(l)
 			plt.ylabel('bit rate selection (kbps)')
 
@@ -179,16 +178,16 @@ def main():
 			for scheme in SCHEMES:
 				ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
+			for i, j in enumerate(ax.lines):
+				j.set_color(colors[i])
 			plt.ylabel('buffer size (sec)')
 
 			ax = fig.add_subplot(313)
 			for scheme in SCHEMES:
 				ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-			for i,j in enumerate(ax.lines):
-				j.set_color(colors[i])	
+			for i, j in enumerate(ax.lines):
+				j.set_color(colors[i])
 			plt.ylabel('bandwidth (mbps)')
 			plt.xlabel('time (sec)')
 

@@ -2,12 +2,12 @@ import os
 import logging
 import numpy as np
 import multiprocessing as mp
-os.environ['CUDA_VISIBLE_DEVICES']=''
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import env
 import a3c
 import load_trace
 
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 S_INFO = 6  # bit_rate, buffer_size, next_chunk_size, bandwidth_measurement(throughput and time), chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
@@ -113,7 +113,7 @@ def central_agent(net_params_queues, exp_queues):
             # synchronize the network parameters of work agent
             actor_net_params = actor.get_network_params()
             critic_net_params = critic.get_network_params()
-            for i in xrange(NUM_AGENTS):
+            for i in range(NUM_AGENTS):
                 net_params_queues[i].put([actor_net_params, critic_net_params])
                 # Note: this is synchronous version of the parallel training,
                 # which is easier to understand and probe. The framework can be
@@ -135,7 +135,7 @@ def central_agent(net_params_queues, exp_queues):
             actor_gradient_batch = []
             critic_gradient_batch = []
 
-            for i in xrange(NUM_AGENTS):
+            for i in range(NUM_AGENTS):
                 s_batch, a_batch, r_batch, terminal, info = exp_queues[i].get()
 
                 actor_gradient, critic_gradient, td_batch = \
@@ -165,13 +165,13 @@ def central_agent(net_params_queues, exp_queues):
             #             assembled_critic_gradient[j] += critic_gradient_batch[i][j]
             # actor.apply_gradients(assembled_actor_gradient)
             # critic.apply_gradients(assembled_critic_gradient)
-            for i in xrange(len(actor_gradient_batch)):
+            for i in range(len(actor_gradient_batch)):
                 actor.apply_gradients(actor_gradient_batch[i])
                 critic.apply_gradients(critic_gradient_batch[i])
 
             # log training information
             epoch += 1
-            avg_reward = total_reward  / total_agents
+            avg_reward = total_reward / total_agents
             avg_td_loss = total_td_loss / total_batch_len
             avg_entropy = total_entropy / total_batch_len
 
@@ -194,9 +194,11 @@ def central_agent(net_params_queues, exp_queues):
                 save_path = saver.save(sess, SUMMARY_DIR + "/nn_model_ep_" +
                                        str(epoch) + ".ckpt")
                 logging.info("Model saved in file: " + save_path)
-                testing(epoch, 
+                testing(
+                    epoch,
                     SUMMARY_DIR + "/nn_model_ep_" + str(epoch) + ".ckpt", 
-                    test_log_file)
+                    test_log_file
+                )
 
 
 def agent(agent_id, all_cooked_time, all_cooked_bw, net_params_queue, exp_queue):
@@ -235,8 +237,8 @@ def agent(agent_id, all_cooked_time, all_cooked_bw, net_params_queue, exp_queue)
             # the action is from the last decision
             # this is to make the framework similar to the real
             delay, sleep_time, buffer_size, rebuf, \
-            video_chunk_size, next_video_chunk_sizes, \
-            end_of_video, video_chunk_remain = \
+                video_chunk_size, next_video_chunk_sizes, \
+                end_of_video, video_chunk_remain = \
                 net_env.get_video_chunk(bit_rate)
 
             time_stamp += delay  # in ms
@@ -244,10 +246,11 @@ def agent(agent_id, all_cooked_time, all_cooked_bw, net_params_queue, exp_queue)
 
             # -- linear reward --
             # reward is video quality - rebuffer penalty - smoothness
-            reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-                     - REBUF_PENALTY * rebuf \
-                     - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                               VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+            reward = \
+                VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+                - REBUF_PENALTY * rebuf \
+                - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                          VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
             # -- log scale reward --
             # log_bit_rate = np.log(VIDEO_BIT_RATE[bit_rate] / float(VIDEO_BIT_RATE[-1]))
@@ -353,7 +356,7 @@ def main():
     # inter-process communication queues
     net_params_queues = []
     exp_queues = []
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         net_params_queues.append(mp.Queue(1))
         exp_queues.append(mp.Queue(1))
 
@@ -365,12 +368,12 @@ def main():
 
     all_cooked_time, all_cooked_bw, _ = load_trace.load_trace(TRAIN_TRACES)
     agents = []
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         agents.append(mp.Process(target=agent,
                                  args=(i, all_cooked_time, all_cooked_bw,
                                        net_params_queues[i],
                                        exp_queues[i])))
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         agents[i].start()
 
     # wait unit training is done

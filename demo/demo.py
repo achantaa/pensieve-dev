@@ -20,16 +20,17 @@ ALL_BITRATES = {0.3, 0.75, 1.2}
 
 cap = cv.VideoCapture(VIDEO_FILE)
 kern_map = {0.3: np.ones((12, 12), np.float32) / 144, 
-			0.75: np.ones((6, 6), np.float32) / 36, 
+			0.75: np.ones((6, 6), np.float32) / 36,
 			1.2: np.ones((1, 1), np.float32) / 1}
 text_map = {0.3: '240P',
 			0.75: '360P',
 			1.2: '720P'}
 
-def read_file(FILE_NAME):
+
+def read_file(file_name):
 	ts = []
 	vs = []
-	with open(FILE_NAME, 'rb') as f:
+	with open(file_name, 'rb') as f:
 		for line in f:
 			parse = line.split()
 			if len(parse) != 2:
@@ -38,23 +39,24 @@ def read_file(FILE_NAME):
 			vs.append(float(parse[1]))
 	return ts, vs
 
+
 rl_bitrates_ts, rl_bitrates = read_file(RL_BITRATE_FILE)
 rl_buffer_ts, rl_buffers = read_file(RL_BUFFER_FILE)
 mpc_bitrates_ts, mpc_bitrates = read_file(MPC_BITRATE_FILE)
 mpc_buffer_ts, mpc_buffers = read_file(MPC_BUFFER_FILE)
 trace_ts, trace_bw = read_file(TRACE_FILE)
 
-print " -- Processing videos -- "
+print(" -- Processing videos -- ")
 all_processed_frames = {}
 for br in ALL_BITRATES:
 	all_processed_frames[br] = []
 
-for _ in xrange(SKIP_FRAMES):
+for _ in range(SKIP_FRAMES):
 	_, frame = cap.read()	
 
 # while(cap.isOpened()):
-for f in xrange(TOTAL_FRAMES):
-	print 'frame', f
+for f in range(TOTAL_FRAMES):
+	print('frame', f)
 	_, frame = cap.read()
 	frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
 	for br in ALL_BITRATES:
@@ -111,6 +113,8 @@ ax5.xaxis.set_tick_params(labelbottom='off')
 ax5.set_xlabel('Time')
 
 rolling_ts = np.linspace(0, 4 * len(rl_bitrates) - 4, len(rl_bitrates) * 20)
+
+
 def get_frame_quality(rolling_ts, bitrates_ts, bitrates, buffer_ts, buffers):
 	frame_quality = {}
 	text_quality = {}
@@ -128,10 +132,12 @@ def get_frame_quality(rolling_ts, bitrates_ts, bitrates, buffer_ts, buffers):
 
 	return frame_quality, text_quality
 
+
 rl_frame_quality, rl_text_quality = get_frame_quality(
 	rolling_ts, rl_bitrates_ts, rl_bitrates, rl_buffer_ts, rl_buffers)
 mpc_frame_quality, mpc_text_quality = get_frame_quality(
 	rolling_ts, mpc_bitrates_ts, mpc_bitrates, mpc_buffer_ts, mpc_buffers)
+
 
 def animate(i):
 	bar1.set_data([i, i], [0, 25])
@@ -146,8 +152,8 @@ def animate(i):
 	
 	return bar1, bar2, bar3, img1, img2, text1, text2
 
-ani = animation.FuncAnimation(fig, animate, rolling_ts, 
-							  interval=50, blit=True)
+
+ani = animation.FuncAnimation(fig, animate, rolling_ts, interval=50, blit=True)
 
 # plt.show()
 

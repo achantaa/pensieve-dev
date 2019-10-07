@@ -4,11 +4,15 @@
 # It serves as a comparison for another line of RL approaches, 
 # which utilize Q learning in the basic tabular form.
 #
-# More details can be found in the following papers. 
-# - Design of a Q-Learning based client quality selection algorithm for HTTP Adaptive Video Streaming - https://www.researchgate.net/publication/258374689_Design_of_a_Q-Learning_based_client_quality_selection_algorithm_for_HTTP_Adaptive_Video_Streaming
-# - Design and optimisation of a (FA)Q-learning-based HTTP adaptive streaming client - http://www.tandfonline.com/doi/pdf/10.1080/09540091.2014.885273?needAccess=true
-# - A Learning-Based Algorithm for Improved Bandwidth-Awareness of Adaptive Streaming Clients - http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7140285
-# - Online learning adaptation strategy for DASH clients - http://dl.acm.org/citation.cfm?id=2910603
+# More details can be found in the following papers. - Design of a Q-Learning based client quality selection
+# algorithm for HTTP Adaptive Video Streaming -
+# https://www.researchgate.net/publication/258374689_Design_of_a_Q
+# -Learning_based_client_quality_selection_algorithm_for_HTTP_Adaptive_Video_Streaming - Design and optimisation of a
+# (FA)Q-learning-based HTTP adaptive streaming client -
+# http://www.tandfonline.com/doi/pdf/10.1080/09540091.2014.885273?needAccess=true - A Learning-Based Algorithm for
+# Improved Bandwidth-Awareness of Adaptive Streaming Clients -
+# http://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=7140285 - Online learning adaptation strategy for DASH clients
+# - http://dl.acm.org/citation.cfm?id=2910603
 #
 
 import os
@@ -24,14 +28,14 @@ BW_MIN = 0  # minimum bandwidth in Mbit/sec
 BW_MAX = 10  # maximum bandwidth in Mbit/sec
 D_BW = 1  # bandwidth granularity
 BF_MIN = 0  # minimum buffer in sec
-BF_MAX = 60  # maxiimum buffer in sec
+BF_MAX = 60  # maximum buffer in sec
 D_BF = 1  # buffer granularity
 BR_LV = 6  # number of bitrate levels
 N_CHUNK = 50  # number of chunk until the end
 LR_RATE = 1e-3  # learning rate
 GAMMA = 0.99  # discount factor
 DEFAULT_QUALITY = 1  # default video quality without agent
-VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
+VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]  # Kbps
 REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 M_IN_K = 1000.0
@@ -54,9 +58,9 @@ class Tabular_Q(object):
             # initialize the q table
             for bw in np.linspace(BW_MIN, BW_MAX, (BW_MAX - BW_MIN) / D_BW + 1):
                 for bf in np.linspace(BF_MIN, BF_MAX, (BF_MAX - BF_MIN) / D_BF + 1):
-                    for br in xrange(BR_LV):
-                        for c in xrange(N_CHUNK):
-                            for a in xrange(BR_LV):
+                    for br in range(BR_LV):
+                        for c in range(N_CHUNK):
+                            for a in range(BR_LV):
                                 self.q_table[(bw, bf, br, c, a)] = 0.0
 
         self.exp_rate = 1.0
@@ -72,7 +76,7 @@ class Tabular_Q(object):
         else:
             max_q = - np.inf
             act = -1
-            for a in xrange(BR_LV):
+            for a in range(BR_LV):
                 q = self.q_table[(bw, bf, br, c, a)]
                 if q > max_q:
                     act = a
@@ -99,7 +103,7 @@ class Tabular_Q(object):
             max_next_q = 0
         else:
             max_next_q = - np.inf        
-            for a in xrange(BR_LV):
+            for a in range(BR_LV):
                 q = self.q_table[(n_bw, n_bf, n_br, n_c, a)]
                 if q > max_next_q:
                     max_next_q = q
@@ -137,18 +141,19 @@ def testing(tabular_q, epoch):
         # the action is from the last decision
         # this is to make the framework similar to the real
         delay, sleep_time, buffer_size, rebuf, \
-        video_chunk_size, next_video_chunk_sizes, \
-        end_of_video, video_chunk_remain = \
+            video_chunk_size, next_video_chunk_sizes, \
+            end_of_video, video_chunk_remain = \
             test_net_env.get_video_chunk(bit_rate)
 
         time_stamp += delay  # in ms
         time_stamp += sleep_time  # in ms
 
         # reward is video quality - rebuffer penalty - smoothness
-        reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-                 - REBUF_PENALTY * rebuf \
-                 - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                           VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+        reward = \
+            VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+            - REBUF_PENALTY * rebuf \
+            - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                      VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
         last_bit_rate = bit_rate
 
@@ -161,7 +166,7 @@ def testing(tabular_q, epoch):
                            str(reward) + '\n')
         log_file.flush()
 
-        bw = float(video_chunk_size) / float(delay) / M_IN_K * BITS_IN_BYTE # Mbit/sec
+        bw = float(video_chunk_size) / float(delay) / M_IN_K * BITS_IN_BYTE  # Mbit/sec
         bw = min(int(bw / D_BW) * D_BW, BW_MAX)
         bf = min(int(buffer_size / D_BF) * D_BF, BF_MAX)
         br = bit_rate
@@ -188,7 +193,7 @@ def testing(tabular_q, epoch):
             log_file = open(log_path, 'wb')
 
     with open(TEST_LOG_PATH, 'ab') as log_file:
-         # append test performance to the log
+        # append test performance to the log
         rewards = []
         test_log_files = os.listdir(TEST_LOG_FOLDER)
         for test_log_file in test_log_files:
@@ -221,7 +226,6 @@ def testing(tabular_q, epoch):
         log_file.flush()
 
 
-
 def main():
     np.random.seed(42)
 
@@ -245,17 +249,18 @@ def main():
     while True:
 
         delay, sleep_time, buffer_size, rebuf, \
-        video_chunk_size, next_video_chunk_sizes, \
-        end_of_video, video_chunk_remain = \
+            video_chunk_size, next_video_chunk_sizes, \
+            end_of_video, video_chunk_remain = \
             net_env.get_video_chunk(bit_rate)
 
         time_stamp += delay  # in ms
         time_stamp += sleep_time  # in ms
 
-        reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-                 - REBUF_PENALTY * rebuf \
-                 - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                           VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+        reward = \
+            VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+            - REBUF_PENALTY * rebuf \
+            - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                      VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
         epoch += 1
 

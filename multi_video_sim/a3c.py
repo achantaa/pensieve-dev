@@ -51,12 +51,12 @@ class ActorNetwork(object):
         self.act_grad_weights = tf.placeholder(tf.float32, [None, 1])
 
         # Compute the objective (log action_vector and entropy)
-        self.obj = tf.reduce_sum(tf.mul(
-                       tf.log(tf.reduce_sum(tf.mul(self.out, self.acts),
+        self.obj = tf.reduce_sum(tf.multiply(
+                       tf.log(tf.reduce_sum(tf.multiply(self.out, self.acts),
                                             reduction_indices=1, keep_dims=True)),
                        -self.act_grad_weights)) \
-                   + ENTROPY_WEIGHT * tf.reduce_sum(tf.mul(self.out,
-                                                           tf.log(self.out + ENTROPY_EPS)))
+            + ENTROPY_WEIGHT * tf.reduce_sum(tf.multiply(self.out,
+                                                         tf.log(self.out + ENTROPY_EPS)))
 
         # Combine the gradients here
         self.actor_gradients = tf.gradients(self.obj, self.network_params)
@@ -98,8 +98,8 @@ class ActorNetwork(object):
 
     def train(self, inputs, acts, act_grad_weights):
         # there can be only one kind of mask in a training epoch
-        for i in xrange(inputs.shape[0]):
-            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
+        for i in range(inputs.shape[0]):
+            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] ==
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
         # action dimension matches with mask length
@@ -113,8 +113,8 @@ class ActorNetwork(object):
         })
 
     def predict(self, inputs):
-        for i in xrange(inputs.shape[0]):
-            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
+        for i in range(inputs.shape[0]):
+            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] ==
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
         return self.sess.run(self.out, feed_dict={
@@ -123,8 +123,8 @@ class ActorNetwork(object):
         })
 
     def get_gradients(self, inputs, acts, act_grad_weights):
-        for i in xrange(inputs.shape[0]):
-            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] == \
+        for i in range(inputs.shape[0]):
+            assert np.all(inputs[0, MASK_DIM, -MAX_BR_LEVELS:] ==
                           inputs[i, MASK_DIM, -MAX_BR_LEVELS:])
 
         return self.sess.run(self.actor_gradients, feed_dict={
@@ -178,7 +178,7 @@ class CriticNetwork(object):
         self.td_target = tf.placeholder(tf.float32, [None, 1])
 
         # Temporal Difference, will also be weights for actor_gradients
-        self.td = tf.sub(self.td_target, self.out)
+        self.td = tf.subtract(self.td_target, self.out)
 
         # Mean square error
         self.loss = tflearn.mean_square(self.td_target, self.out)
@@ -270,7 +270,7 @@ def compute_gradients(s_batch, a_batch, r_batch, terminal, actor, critic):
     else:
         R_batch[-1, 0] = v_batch[-1, 0]  # boot strap from last state
 
-    for t in reversed(xrange(ba_size - 1)):
+    for t in reversed(range(ba_size - 1)):
         R_batch[t, 0] = r_batch[t] + GAMMA * R_batch[t + 1, 0]
 
     td_batch = R_batch - v_batch
@@ -288,7 +288,7 @@ def discount(x, gamma):
     """
     out = np.zeros(len(x))
     out[-1] = x[-1]
-    for i in reversed(xrange(len(x)-1)):
+    for i in reversed(range(len(x)-1)):
         out[i] = x[i] + gamma*out[i+1]
     assert x.ndim >= 1
     # More efficient version:
@@ -302,7 +302,7 @@ def compute_entropy(x):
     H(x) = - sum( p * log(p))
     """
     H = 0.0
-    for i in xrange(len(x)):
+    for i in range(len(x)):
         if 0 < x[i] < 1:
             H -= x[i] * np.log(x[i])
     return H
@@ -310,13 +310,13 @@ def compute_entropy(x):
 
 def build_summaries():
     td_loss = tf.Variable(0.)
-    tf.scalar_summary("TD_loss", td_loss)
+    tf.summary.scalar("TD_loss", td_loss)
     eps_total_reward = tf.Variable(0.)
-    tf.scalar_summary("Eps_total_reward", eps_total_reward)
+    tf.summary.scalar("Eps_total_reward", eps_total_reward)
     avg_entropy = tf.Variable(0.)
-    tf.scalar_summary("Avg_entropy", avg_entropy)
+    tf.summary.scalar("Avg_entropy", avg_entropy)
 
     summary_vars = [td_loss, eps_total_reward, avg_entropy]
-    summary_ops = tf.merge_all_summaries()
+    summary_ops = tf.summary.merge_all()
 
     return summary_ops, summary_vars

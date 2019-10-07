@@ -1,17 +1,17 @@
 #!/usr/bin/env python
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import SocketServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
+import socketserver
 import base64
 import urllib
 import sys
 import os
 import json
-os.environ['CUDA_VISIBLE_DEVICES']=''
-
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import time
 import a3c
+os.environ['CUDA_VISIBLE_DEVICES']=''
+
 
 
 S_INFO = 6  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
@@ -73,21 +73,23 @@ def make_request_handler(input_dict):
         def do_POST(self):
             content_length = int(self.headers['Content-Length'])
             post_data = json.loads(self.rfile.read(content_length))
-            print post_data
+            print(post_data)
 
-            if ( 'pastThroughput' in post_data ):
+            if 'pastThroughput' in post_data:
                 # @Hongzi: this is just the summary of throughput/quality at the end of the load
                 # so we don't want to use this information to send back a new quality
-                print "Summary: ", post_data
+                print("Summary: ", post_data)
             else:
                 # option 1. reward for just quality
                 # reward = post_data['lastquality']
                 # option 2. combine reward for quality and rebuffer time
                 #           tune up the knob on rebuf to prevent it more
-                # reward = post_data['lastquality'] - 0.1 * (post_data['RebufferTime'] - self.input_dict['last_total_rebuf'])
+                # reward =
+                # post_data['lastquality'] - 0.1 * (post_data['RebufferTime'] - self.input_dict['last_total_rebuf'])
                 # option 3. give a fixed penalty if video is stalled
                 #           this can reduce the variance in reward signal
-                # reward = post_data['lastquality'] - 10 * ((post_data['RebufferTime'] - self.input_dict['last_total_rebuf']) > 0)
+                # reward =
+                # post_data['lastquality'] - 10*((post_data['RebufferTime'] - self.input_dict['last_total_rebuf']) > 0)
 
                 # option 4. use the metric in SIGCOMM MPC paper
                 rebuffer_time = float(post_data['RebufferTime'] -self.input_dict['last_total_rebuf'])
@@ -131,7 +133,7 @@ def make_request_handler(input_dict):
                 state = np.roll(state, -1, axis=1)
 
                 next_video_chunk_sizes = []
-                for i in xrange(A_DIM):
+                for i in range(A_DIM):
                     next_video_chunk_sizes.append(get_chunk_size(i, self.input_dict['video_chunk_coount']))
 
                 # this should be S_INFO number of terms
@@ -170,7 +172,7 @@ def make_request_handler(input_dict):
                 send_data = str(bit_rate)
 
                 end_of_video = False
-                if ( post_data['lastRequest'] == TOTAL_VIDEO_CHUNKS ):
+                if post_data['lastRequest'] == TOTAL_VIDEO_CHUNKS:
                     send_data = "REFRESH"
                     end_of_video = True
                     self.input_dict['last_total_rebuf'] = 0
@@ -194,7 +196,7 @@ def make_request_handler(input_dict):
                     self.s_batch.append(state)
 
         def do_GET(self):
-            print >> sys.stderr, 'GOT REQ'
+            print('GOT REQ', file=sys.stderr)
             self.send_response(200)
             #self.send_header('Cache-Control', 'Cache-Control: no-cache, no-store, must-revalidate max-age=0')
             self.send_header('Cache-Control', 'max-age=3000')
@@ -264,7 +266,7 @@ def run(server_class=HTTPServer, port=8333, log_file_path=LOG_FILE):
 
         server_address = ('localhost', port)
         httpd = server_class(server_address, handler_class)
-        print 'Listening on port ' + str(port)
+        print('Listening on port ' + str(port))
         httpd.serve_forever()
 
 
@@ -280,7 +282,7 @@ if __name__ == "__main__":
     try:
         main()
     except KeyboardInterrupt:
-        print "Keyboard interrupted."
+        print("Keyboard interrupted.")
         try:
             sys.exit(0)
         except SystemExit:

@@ -1,19 +1,19 @@
 import os
 import sys
-os.environ['CUDA_VISIBLE_DEVICES']=''
 import numpy as np
 import tensorflow as tf
 import load_trace
 import a3c
 import fixed_env as env
 
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 
 S_INFO = 6  # bit_rate, buffer_size, next_chunk_size, bandwidth_measurement(throughput and time), chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
-VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
+VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 M_IN_K = 1000.0
@@ -87,10 +87,11 @@ def main():
             time_stamp += sleep_time  # in ms
 
             # reward is video quality - rebuffer penalty - smoothness
-            reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-                     - REBUF_PENALTY * rebuf \
-                     - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                               VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+            reward = \
+                VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+                - REBUF_PENALTY * rebuf \
+                - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                          VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
             r_batch.append(reward)
 

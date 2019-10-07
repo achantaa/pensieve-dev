@@ -1,5 +1,6 @@
 import os
-os.environ['CUDA_VISIBLE_DEVICES']=''
+
+os.environ['CUDA_VISIBLE_DEVICES'] = ''
 import numpy as np
 import tensorflow as tf
 import fixed_env as env
@@ -7,13 +8,12 @@ import a3c
 import load_trace
 import matplotlib.pyplot as plt
 
-
 S_INFO = 6  # bit_rate, buffer_size, next_chunk_size, bandwidth_measurement(throughput and time), chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
 A_DIM = 6
 ACTOR_LR_RATE = 0.0001
 CRITIC_LR_RATE = 0.001
-VIDEO_BIT_RATE = [300,750,1200,1850,2850,4300]  # Kbps
+VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 M_IN_K = 1000.0
@@ -29,7 +29,6 @@ NN_MODEL = './models/pretrain_linear_reward.ckpt'
 
 
 def main():
-
     np.random.seed(RANDOM_SEED)
 
     assert len(VIDEO_BIT_RATE) == A_DIM
@@ -83,18 +82,19 @@ def main():
             # the action is from the last decision
             # this is to make the framework similar to the real
             delay, sleep_time, buffer_size, rebuf, \
-            video_chunk_size, next_video_chunk_sizes, \
-            end_of_video, video_chunk_remain = \
+                video_chunk_size, next_video_chunk_sizes, \
+                end_of_video, video_chunk_remain = \
                 net_env.get_video_chunk(bit_rate)
 
             time_stamp += delay  # in ms
             time_stamp += sleep_time  # in ms
 
             # reward is video quality - rebuffer penalty - smoothness
-            reward = VIDEO_BIT_RATE[bit_rate] / M_IN_K \
-                     - REBUF_PENALTY * rebuf \
-                     - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
-                                               VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
+            reward =\
+                VIDEO_BIT_RATE[bit_rate] / M_IN_K \
+                - REBUF_PENALTY * rebuf \
+                - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[bit_rate] -
+                                          VIDEO_BIT_RATE[last_bit_rate]) / M_IN_K
 
             r_batch.append(reward)
 
@@ -155,7 +155,7 @@ def main():
                 a_batch.append(action_vec)
                 entropy_record = []
 
-                print "video count", video_count
+                print("video count", video_count)
                 video_count += 1
 
                 if video_count >= len(all_file_names):

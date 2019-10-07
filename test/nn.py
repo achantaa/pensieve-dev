@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tflearn
 
 
@@ -33,8 +33,9 @@ class PredictionNetwork(object):
         self.cross_entropy = tf.reduce_mean(
             tf.nn.softmax_cross_entropy_with_logits(labels=self.target, logits=self.out))
 
-        self.optimize = tf.train.RMSPropOptimizer(self.lr_rate).\
-                        minimize(self.cross_entropy, var_list=self.network_params)
+        self.optimize =\
+            tf.train.RMSPropOptimizer(self.lr_rate).\
+            minimize(self.cross_entropy, var_list=self.network_params)
 
     def create_network(self):
         with tf.variable_scope('nn'):
@@ -75,9 +76,9 @@ class PredictionNetwork(object):
 def build_summaries():
 
     loss = tf.Variable(0.)
-    tf.scalar_summary("Loss", loss)
+    tf.summary.scalar("Loss", loss)
     
     summary_vars = [loss]
-    summary_ops = tf.merge_all_summaries()
+    summary_ops = tf.summary.merge_all
 
     return summary_ops, summary_vars

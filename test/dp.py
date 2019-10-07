@@ -9,9 +9,9 @@ B_IN_MB = 1000000.0
 BITS_IN_BYTE = 8.0
 RANDOM_SEED = 42
 DELAY_FACTOR = 3
-VIDEO_CHUNCK_LEN = 4000.0  # (ms), every time add this amount to buffer
+VIDEO_CHUNK_LEN = 4000.0  # (ms), every time add this amount to buffer
 BITRATE_LEVELS = 5
-TOTAL_VIDEO_CHUNCK = 65
+TOTAL_VIDEO_CHUNK = 65
 PACKET_PAYLOAD_PORTION = 0.95
 LINK_RTT = 80  # (sec)
 PACKET_SIZE = 1500  # bytes
@@ -27,10 +27,10 @@ VIDEO_SIZE_FILE = './video_size_'
 # pre-compute all possible download time
 def get_download_time(total_video_chunks, quan_time, quan_bw, dt, video_size, bitrate_levels):
     download_time = np.zeros([total_video_chunks, len(quan_time), bitrate_levels])
-    for t in xrange(len(quan_time)):
-        print t, len(quan_time)
-        for n in xrange(total_video_chunks):
-            for b in xrange(bitrate_levels):
+    for t in range(len(quan_time)):
+        print(t, len(quan_time))
+        for n in range(total_video_chunks):
+            for b in range(bitrate_levels):
                 chunk_size = video_size[b][n]  # in bytes
                 downloaded = 0.0
                 time_spent = 0.0
@@ -71,14 +71,14 @@ def main():
     all_cooked_time, all_cooked_bw = load_trace.load_trace()
 
     video_size = {}  # in bytes
-    for bitrate in xrange(BITRATE_LEVELS):
+    for bitrate in range(BITRATE_LEVELS):
         video_size[bitrate] = []
         with open(VIDEO_SIZE_FILE + str(bitrate)) as f:
             for line in f:
                 video_size[bitrate].append(int(line.split()[0]))
 
     # assert len(all_cooked_time) == len(all_cooked_bw)
-    # for cooked_data_idx in xrange(len(all_cooked_time))
+    # for cooked_data_idx in range(len(all_cooked_time))
 
     cooked_time = all_cooked_time[0]
     cooked_bw = all_cooked_bw[0]
@@ -94,7 +94,7 @@ def main():
     quan_bw = np.zeros(len(quan_time))
 
     curr_time_idx = 0
-    for i in xrange(len(quan_bw)):
+    for i in range(len(quan_bw)):
         while curr_time_idx < len(cooked_time) - 1 and \
               cooked_time[curr_time_idx] < quan_time[i]:
             curr_time_idx += 1
@@ -116,7 +116,7 @@ def main():
     full_quan_time = quan_time
     full_quan_bw = quan_bw
 
-    for i in xrange(int(np.ceil(t_portion))):
+    for i in range(int(np.ceil(t_portion))):
         full_quan_time = np.append(full_quan_time,
                                    (quan_time[1:] + full_quan_time[-1]))
         full_quan_bw = np.append(full_quan_bw, quan_bw[1:])
@@ -132,8 +132,8 @@ def main():
     # -----------------------------------------------------------
     all_download_time = {}
 
-    # print "Pre-compute the download time table"
-    # all_download_time = get_download_time(total_video_chunks=TOTAL_VIDEO_CHUNCK,
+    # print("Pre-compute the download time table")
+    # all_download_time = get_download_time(total_video_chunks=TOTAL_VIDEO_CHUNK,
     #                                   quan_time=quan_time,
     #                                   quan_bw=quan_bw,
     #                                   dt=DT,
@@ -153,20 +153,20 @@ def main():
             quan_time, quan_bw, DT, video_size)
     first_chunk_finish_time = download_time + LINK_RTT / M_IN_K
     first_chunk_finish_idx = int(np.floor(first_chunk_finish_time / DT))
-    buffer_size = int(VIDEO_CHUNCK_LEN / M_IN_K / DT)
+    buffer_size = int(VIDEO_CHUNK_LEN / M_IN_K / DT)
 
     total_reward[(0, first_chunk_finish_idx, buffer_size, DEFAULT_QUALITY)] = \
         VIDEO_BIT_RATE[DEFAULT_QUALITY] / M_IN_K \
         - REBUF_PENALTY * first_chunk_finish_time
     last_dp_pt[(0, first_chunk_finish_idx, buffer_size, DEFAULT_QUALITY)] = (0, 0, 0, 0)
 
-    for n in xrange(1, TOTAL_VIDEO_CHUNCK):
-        print n, TOTAL_VIDEO_CHUNCK
-        for t in xrange(t_max_idx):
-            for b in xrange(b_max_idx):
-                for m in xrange(BITRATE_LEVELS):
+    for n in range(1, TOTAL_VIDEO_CHUNK):
+        print(n, TOTAL_VIDEO_CHUNK)
+        for t in range(t_max_idx):
+            for b in range(b_max_idx):
+                for m in range(BITRATE_LEVELS):
                     if (n - 1, t, b, m) in total_reward:
-                        for new_bit_rate in xrange(BITRATE_LEVELS):
+                        for new_bit_rate in range(BITRATE_LEVELS):
                             download_time = \
                                 restore_or_compute_download_time(
                                     all_download_time, n, t, new_bit_rate,
@@ -182,7 +182,7 @@ def main():
                                     VIDEO_BIT_RATE[m]) / M_IN_K
 
                             buffer_size = np.maximum(buffer_size - download_time, 0.0)
-                            buffer_size += VIDEO_CHUNCK_LEN / M_IN_K
+                            buffer_size += VIDEO_CHUNK_LEN / M_IN_K
 
                             buffer_idx = int(buffer_size / DT)
 
@@ -210,15 +210,15 @@ def main():
     optimal_total_reward = - np.inf
     end_dp_pt = None
     for k in total_reward:
-        if k[0] == TOTAL_VIDEO_CHUNCK - 1:
+        if k[0] == TOTAL_VIDEO_CHUNK - 1:
             if total_reward[k] > optimal_total_reward:
                 optimal_total_reward = total_reward[k]
                 end_dp_pt = last_dp_pt[k]
 
-    print optimal_total_reward
+    print(optimal_total_reward)
     if end_dp_pt is not None:
         while end_dp_pt != (0, 0, 0, 0):
-            print end_dp_pt
+            print(end_dp_pt)
             end_dp_pt = last_dp_pt[end_dp_pt]
 
 

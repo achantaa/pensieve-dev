@@ -8,7 +8,7 @@ SCHEMES = ['BB', 'RB', 'BOLA', 'FESTIVE', 'RL']
 BITRATE_MAX = 3.0  # Mbit/sec
 K_IN_M = 1000.0
 NUM_BINS = 200
-COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
+COLOR_MAP = plt.cm.jet # nipy_spectral, Set1,Paired
 
 
 def main():
@@ -101,7 +101,7 @@ def main():
 		SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme]))
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
+	for i, j in enumerate(ax.lines):
 		j.set_color(colors[i])
 
 	ax.legend(SCHEMES_REW, loc=4)
@@ -123,7 +123,7 @@ def main():
 		ax.plot(base[:-1], cumulative)	
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
-	for i,j in enumerate(ax.lines):
+	for i, j in enumerate(ax.lines):
 		j.set_color(colors[i])	
 
 	ax.legend(SCHEMES_REW, loc=4)
@@ -131,6 +131,7 @@ def main():
 	plt.ylabel('CDF')
 	plt.xlabel('total reward')
 	plt.show()
+
 
 if __name__ == '__main__':
 	main()

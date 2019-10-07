@@ -1,5 +1,5 @@
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
 import tflearn
 
 
@@ -44,12 +44,16 @@ class ActorNetwork(object):
         self.act_grad_weights = tf.placeholder(tf.float32, [None, 1])
 
         # Compute the objective (log action_vector and entropy)
-        self.obj = tf.reduce_sum(tf.multiply(
-                       tf.log(tf.reduce_sum(tf.multiply(self.out, self.acts),
-                                            reduction_indices=1, keep_dims=True)),
+        self.obj =\
+            tf.reduce_sum(
+                tf.multiply(
+                       tf.log(
+                           tf.reduce_sum(
+                               tf.multiply(self.out, self.acts),
+                               reduction_indices=1, keep_dims=True)),
                        -self.act_grad_weights)) \
-                   + ENTROPY_WEIGHT * tf.reduce_sum(tf.multiply(self.out,
-                                                           tf.log(self.out + ENTROPY_EPS)))
+            + ENTROPY_WEIGHT * tf.reduce_sum(tf.multiply(self.out,
+                                                         tf.log(self.out + ENTROPY_EPS)))
 
         # Combine the gradients here
         self.actor_gradients = tf.gradients(self.obj, self.network_params)
@@ -234,7 +238,7 @@ def compute_gradients(s_batch, a_batch, r_batch, terminal, actor, critic):
     else:
         R_batch[-1, 0] = v_batch[-1, 0]  # boot strap from last state
 
-    for t in reversed(xrange(ba_size - 1)):
+    for t in reversed(range(ba_size - 1)):
         R_batch[t, 0] = r_batch[t] + GAMMA * R_batch[t + 1, 0]
 
     td_batch = R_batch - v_batch
@@ -252,7 +256,7 @@ def discount(x, gamma):
     """
     out = np.zeros(len(x))
     out[-1] = x[-1]
-    for i in reversed(xrange(len(x)-1)):
+    for i in reversed(range(len(x)-1)):
         out[i] = x[i] + gamma*out[i+1]
     assert x.ndim >= 1
     # More efficient version:
@@ -266,7 +270,7 @@ def compute_entropy(x):
     H(x) = - sum( p * log(p))
     """
     H = 0.0
-    for i in xrange(len(x)):
+    for i in range(len(x)):
         if 0 < x[i] < 1:
             H -= x[i] * np.log(x[i])
     return H

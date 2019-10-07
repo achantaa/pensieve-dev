@@ -21,7 +21,7 @@ with open(LOG_PATH, 'rb') as f:
         rebuffer_times.append(float(parse[3]))
         rewards.append(float(parse[4]))
 
-f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex=True)
+f, (ax1, ax2, ax3, ax4) = plt.subplots(4, sharex='all')
 
 ax1.plot(time_stamp[-PLOT_SAMPLES:], rewards[-PLOT_SAMPLES:])
 ax1.set_title('Average reward: ' + str(np.mean(rewards[-PLOT_SAMPLES:])))
