@@ -1,3 +1,5 @@
+Forked from original Pensieve repo - https://github.com/hongzimao/pensieve
+
 # Pensieve
 Pensieve is a system that generates adaptive bitrate algorithms using reinforcement learning.
 http://web.mit.edu/pensieve/
