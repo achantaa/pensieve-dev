@@ -169,11 +169,11 @@ def make_request_handler(input_dict):
                 # because there is an intrinsic discrepancy in passing single state and batch states
 
                 # send data to html side
-                send_data = str(bit_rate)
+                send_data = str(bit_rate).encode('utf-8')
 
                 end_of_video = False
                 if post_data['lastRequest'] == TOTAL_VIDEO_CHUNKS:
-                    send_data = "REFRESH"
+                    send_data = b"REFRESH"
                     end_of_video = True
                     self.input_dict['last_total_rebuf'] = 0
                     self.input_dict['last_bit_rate'] = DEFAULT_QUALITY
@@ -202,7 +202,7 @@ def make_request_handler(input_dict):
             self.send_header('Cache-Control', 'max-age=3000')
             self.send_header('Content-Length', 20)
             self.end_headers()
-            self.wfile.write("console.log('here');")
+            self.wfile.write(b"console.log('here');")
 
         def log_message(self, format, *args):
             return
@@ -219,7 +219,7 @@ def run(server_class=HTTPServer, port=8333, log_file_path=LOG_FILE):
     if not os.path.exists(SUMMARY_DIR):
         os.makedirs(SUMMARY_DIR)
 
-    with tf.Session() as sess, open(log_file_path, 'wb') as log_file:
+    with tf.Session() as sess, open(log_file_path, 'w') as log_file:
 
         actor = a3c.ActorNetwork(sess,
                                  state_dim=[S_INFO, S_LEN], action_dim=A_DIM,

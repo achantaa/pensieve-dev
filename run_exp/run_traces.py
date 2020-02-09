@@ -15,7 +15,7 @@ def main():
     process_id = sys.argv[3]
     ip = sys.argv[4]
 
-    sleep_vec = range(1, 10)  # random sleep second
+    sleep_vec = list(range(1, 10))  # random sleep second [[convert to list in Python 3 as range returns a lazy object instead of list]]
 
     files = os.listdir(trace_path)
     for f in files:
@@ -26,7 +26,7 @@ def main():
             sleep_time = sleep_vec[int(process_id)]
 
             proc = subprocess.Popen('mm-delay ' + str(MM_DELAY) +
-                                    ' mm-link 12mbps ' + trace_path + f + ' ' +
+                                    ' mm-link 12Mbps_trace ' + trace_path + f + ' ' +
                                     '/usr/bin/python ' + RUN_SCRIPT + ' ' + ip + ' ' +
                                     abr_algo + ' ' + str(RUN_TIME) + ' ' +
                                     process_id + ' ' + f + ' ' + str(sleep_time),
@@ -34,12 +34,13 @@ def main():
 
             (out, err) = proc.communicate()
 
-            if out == 'done\n':
+            if out == b'done\n':
                 break
             else:
                 with open('./chrome_retry_log', 'ab') as log:
-                    log.write(abr_algo + '_' + f + '\n')
-                    log.write(out + '\n')
+                    algo = abr_algo + '_' + f + '\n'
+                    log.write(algo.encode('utf-8'))
+                    log.write(out + b'\n')
                     log.flush()
 
 

@@ -15,7 +15,7 @@ SMOOTH_P = 1
 COLOR_MAP = plt.cm.jet  # nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 # SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
-SCHEMES = ['sim_rl', SIM_DP]
+SCHEMES = ['sim_rl', 'sim_bb', 'sim_mpc']
 
 
 def main():

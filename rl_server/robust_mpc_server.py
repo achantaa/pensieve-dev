@@ -274,7 +274,7 @@ def make_request_handler(input_dict):
 
                 end_of_video = False
                 if post_data['lastRequest'] == TOTAL_VIDEO_CHUNKS:
-                    send_data = "REFRESH"
+                    send_data = b"REFRESH"
                     end_of_video = True
                     self.input_dict['last_total_rebuf'] = 0
                     self.input_dict['last_bit_rate'] = DEFAULT_QUALITY
@@ -303,7 +303,7 @@ def make_request_handler(input_dict):
             self.send_header('Cache-Control', 'max-age=3000')
             self.send_header('Content-Length', 20)
             self.end_headers()
-            self.wfile.write("console.log('here');")
+            self.wfile.write(b"console.log('here');")
 
         def log_message(self, format, *args):
             return
@@ -322,7 +322,7 @@ def run(server_class=HTTPServer, port=8333, log_file_path=LOG_FILE):
     for combo in itertools.product([0, 1, 2, 3, 4, 5], repeat=5):
         CHUNK_COMBO_OPTIONS.append(combo)
 
-    with open(log_file_path, 'wb') as log_file:
+    with open(log_file_path, 'w') as log_file:
 
         s_batch = [np.zeros((S_INFO, S_LEN))]
 

@@ -38,7 +38,7 @@ def make_request_handler(input_dict):
             post_data = json.loads(self.rfile.read(content_length))
 
             print(post_data)
-            send_data = ""
+            send_data = b""
 
             if 'lastquality' in post_data:
                 rebuffer_time = float(post_data['RebufferTime'] - self.input_dict['last_total_rebuf'])
@@ -54,15 +54,16 @@ def make_request_handler(input_dict):
                 video_chunk_fetch_time = post_data['lastChunkFinishTime'] - post_data['lastChunkStartTime']
                 video_chunk_size = post_data['lastChunkSize']
 
+                metrics =   str(time.time()) + '\t' + \
+                            str(VIDEO_BIT_RATE[post_data['lastquality']]) + '\t' + \
+                            str(post_data['buffer']) + '\t' + \
+                            str(float(post_data['RebufferTime'] - self.input_dict[
+                                'last_total_rebuf']) / M_IN_K) + '\t' + \
+                            str(video_chunk_size) + '\t' + \
+                            str(video_chunk_fetch_time) + '\t' + \
+                            str(reward) + '\n'
                 # log wall_time, bit_rate, buffer_size, rebuffer_time, video_chunk_size, download_time, reward
-                self.log_file.write(str(time.time()) + '\t' +
-                                    str(VIDEO_BIT_RATE[post_data['lastquality']]) + '\t' +
-                                    str(post_data['buffer']) + '\t' +
-                                    str(float(post_data['RebufferTime'] - self.input_dict[
-                                        'last_total_rebuf']) / M_IN_K) + '\t' +
-                                    str(video_chunk_size) + '\t' +
-                                    str(video_chunk_fetch_time) + '\t' +
-                                    str(reward) + '\n')
+                self.log_file.write(metrics)
                 self.log_file.flush()
 
                 self.input_dict['last_total_rebuf'] = post_data['RebufferTime']
@@ -88,7 +89,7 @@ def make_request_handler(input_dict):
             self.send_header('Cache-Control', 'max-age=3000')
             self.send_header('Content-Length', 20)
             self.end_headers()
-            self.wfile.write("console.log('here');")
+            self.wfile.write(b"console.log('here');")
 
         def log_message(self, format, *args):
             return
@@ -100,7 +101,7 @@ def run(server_class=HTTPServer, port=8333, log_file_path=LOG_FILE):
     if not os.path.exists(SUMMARY_DIR):
         os.makedirs(SUMMARY_DIR)
 
-    with open(log_file_path, 'wb') as log_file:
+    with open(log_file_path, 'w') as log_file:
         last_bit_rate = DEFAULT_QUALITY
         last_total_rebuf = 0
         input_dict = {'log_file': log_file,
