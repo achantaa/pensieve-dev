@@ -267,7 +267,7 @@ def make_request_handler(input_dict):
 
                 # some combo was good
                 if best_combo != ():
-                    send_data = str(best_combo[0])
+                    send_data = str(best_combo[0]).encode()
 
                 end = time.time()
                 # print "TOOK: " + str(end-start)

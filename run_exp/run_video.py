@@ -38,7 +38,7 @@ sleep_time = sys.argv[6]
 sleep(int(sleep_time))
 
 # generate url
-url = 'http://' + ip + '/' + 'myindex_' + abr_algo + '.html'
+url = 'http://{}/'.format(os.environ["MAHIMAHI_BASE"]) + 'myindex_' + abr_algo + '.html'
 
 # timeout signal
 signal.signal(signal.SIGALRM, timeout_handler)
@@ -53,13 +53,13 @@ try:
 
     # start abr algorithm server
     if abr_algo == 'RL':
-        command = 'exec /usr/bin/python ../rl_server/rl_server_no_training.py ' + trace_file
+        command = 'exec python ../rl_server/rl_server_no_training.py ' + trace_file
     elif abr_algo == 'fastMPC':
-        command = 'exec /usr/bin/python ../rl_server/mpc_server.py ' + trace_file
+        command = 'exec python ../rl_server/mpc_server.py ' + trace_file
     elif abr_algo == 'robustMPC':
-        command = 'exec /usr/bin/python ../rl_server/robust_mpc_server.py ' + trace_file
+        command = 'exec python ../rl_server/robust_mpc_server.py ' + trace_file
     else:
-        command = 'exec /usr/bin/python ../rl_server/simple_server.py ' + abr_algo + ' ' + trace_file
+        command = 'exec python ../rl_server/simple_server.py ' + abr_algo + ' ' + trace_file
 
     proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
     sleep(2)
