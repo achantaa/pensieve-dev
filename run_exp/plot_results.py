@@ -8,7 +8,7 @@ NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-VIDEO_LEN = 64
+VIDEO_LEN = 49
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet  # nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
@@ -39,6 +39,9 @@ def main():
 		reward = []
 
 		print(log_file)
+		# skip empty log files
+		if os.stat(RESULTS_FOLDER + log_file).st_size == 0:
+			continue
 
 		with open(RESULTS_FOLDER + log_file, 'r') as f:
 			if SIM_DP in log_file:

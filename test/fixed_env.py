@@ -160,5 +160,6 @@ class Environment:
             return_buffer_size / MILLISECONDS_IN_SECOND, \
             rebuf / MILLISECONDS_IN_SECOND, \
             video_chunk_size, \
+            next_video_chunk_sizes, \
             end_of_video, \
             video_chunk_remain
