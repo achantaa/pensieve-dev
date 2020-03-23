@@ -161,8 +161,10 @@ def main():
     ax = fig.add_subplot(111)
 
     for scheme in SCHEMES:
+        # values, base = np.histogram(reward_all[scheme], bins=NUM_BINS, density=True)
         values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
         cumulative = np.cumsum(values)
+        cumulative = cumulative / np.max(np.abs(cumulative))
         ax.plot(base[:-1], cumulative)
 
     colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
@@ -172,7 +174,7 @@ def main():
     ax.legend(SCHEMES_REW, loc=4)
 
     plt.ylabel('CDF')
-    plt.xlabel('total reward')
+    plt.xlabel('Average QoE')
     plt.show()
 
     # ---- ---- ---- ----
