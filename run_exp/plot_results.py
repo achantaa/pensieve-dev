@@ -123,7 +123,7 @@ def main():
 
 	SCHEMES_REW = []
 	for scheme in SCHEMES:
-		SCHEMES_REW.append(scheme + ': ' + str(mean_rewards[scheme]))
+		SCHEMES_REW.append(scheme + ': ' + str(np.around(mean_rewards[scheme], 4)))
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 	for i, j in enumerate(ax.lines):
@@ -145,16 +145,25 @@ def main():
 	for scheme in SCHEMES:
 		values, base = np.histogram(reward_all[scheme], bins=NUM_BINS)
 		cumulative = np.cumsum(values)
+		
+		# Normalizing to [0,1]
+		cumulative = cumulative / np.max(np.abs(cumulative))
+		
 		ax.plot(base[:-1], cumulative)
 
 	colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 	for i, j in enumerate(ax.lines):
 		j.set_color(colors[i])
 
-	ax.legend(SCHEMES_REW, loc=4)
+	# Shrink current axis by 20%
+	box = ax.get_position()
+	ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
+	# Puts legend to the right of the current axis
+	ax.legend(SCHEMES_REW, loc='center left', bbox_to_anchor=(1, 0.5))
+	
 	plt.ylabel('CDF')
-	plt.xlabel('total reward')
+	plt.xlabel('QoE')
 	plt.show()
 
 	# ---- ---- ---- ----
