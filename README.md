@@ -1,11 +1,15 @@
-Forked from original Pensieve repo - https://github.com/hongzimao/pensieve
+Personal Repository for testing ```Pensieve```, forked from original repo at - https://github.com/hongzimao/pensieve
 
 # Pensieve
 Pensieve is a system that generates adaptive bitrate algorithms using reinforcement learning.
 http://web.mit.edu/pensieve/
 
 ### Prerequisites
-- Install prerequisites (tested with Ubuntu 16.04, Tensorflow v1.1.0, TFLearn v0.3.1 and Selenium v2.39.0)
+- Prerequisites can be set up using the ```setup.py``` script in the root folder
+- Original working was tested with Ubuntu 16.04, Tensorflow v1.1.0, TFLearn v0.3.1 and Selenium v2.39.0
+- Currently testing with Ubuntu 18.04 and 19.04, Tensorflow v1.14.0, TFLearn v0.3.2 and Selenium v3.141.0 and Python 3.7.x (recommended to be set up through the Anaconda distribution)
+
+Install with -
 ```
 python setup.py
 ```
