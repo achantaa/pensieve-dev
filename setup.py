@@ -12,12 +12,13 @@ os.system("sudo apt-get -y install mahimahi")
 os.system("sudo apt-get -y install apache2")
 
 # selenium
-os.system("wget 'https://pypi.python.org/packages/source/s/selenium/selenium-2.39.0.tar.gz'")
-os.system("sudo apt-get -y install python-setuptools python-pip xvfb xserver-xephyr tightvncserver unzip")
-os.system("tar xvzf selenium-2.39.0.tar.gz")
-selenium_dir = start_dir + "/selenium-2.39.0"
-os.chdir(selenium_dir)
-os.system("sudo python setup.py install")
+# os.system("wget 'https://pypi.python.org/packages/source/s/selenium/selenium-2.39.0.tar.gz'")
+# os.system("sudo apt-get -y install python-setuptools python-pip xvfb xserver-xephyr tightvncserver unzip")
+# os.system("tar xvzf selenium-2.39.0.tar.gz")
+# selenium_dir = start_dir + "/selenium-2.39.0"
+# os.chdir(selenium_dir)
+# os.system("sudo python setup.py install")
+os.system("sudo pip install selenium")
 os.system("sudo sh -c \"echo 'DBUS_SESSION_BUS_ADDRESS=/dev/null' > /etc/init.d/selenium\"")
 
 # py virtual display
@@ -29,7 +30,7 @@ os.system("sudo apt-get -f -y install")
 
 # tensorflow
 os.system("sudo apt-get -y install python-pip python-dev")
-os.system("sudo pip install tensorflow")
+os.system("sudo pip install tensorflow==1.14.0")
 
 # tflearn
 os.system("sudo pip install tflearn")
