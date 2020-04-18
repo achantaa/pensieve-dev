@@ -7,7 +7,7 @@ import sys
 import os
 import json
 import numpy as np
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import time
 import a3c
 os.environ['CUDA_VISIBLE_DEVICES']=''

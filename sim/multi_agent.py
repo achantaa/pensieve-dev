@@ -2,7 +2,7 @@ import os
 import logging
 import numpy as np
 import multiprocessing as mp
-import tensorflow.compat.v1 as tf
+import tensorflow as tf
 import env
 import a3c
 import load_trace
