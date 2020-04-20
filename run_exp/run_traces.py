@@ -26,7 +26,7 @@ def main():
             sleep_time = sleep_vec[int(process_id)]
             
             proc = subprocess.Popen('mm-delay ' + str(MM_DELAY) +
-                                    ' mm-link 12mbps ' + trace_path + f + ' mm-loss uplink 0.05 ' + 'mm-loss downlink 0.05' +
+                                    ' mm-link 12mbps ' + trace_path + f +
                                     ' python ' + RUN_SCRIPT + ' ' + ip + ' ' +
                                     abr_algo + ' ' + str(RUN_TIME) + ' ' +
                                     process_id + ' ' + f + ' ' + str(sleep_time),

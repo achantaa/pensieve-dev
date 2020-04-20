@@ -159,8 +159,8 @@ def central_agent(net_params_queues, exp_queues):
             assert len(actor_gradient_batch) == len(critic_gradient_batch)
             # assembled_actor_gradient = actor_gradient_batch[0]
             # assembled_critic_gradient = critic_gradient_batch[0]
-            # for i in xrange(len(actor_gradient_batch) - 1):
-            #     for j in xrange(len(assembled_actor_gradient)):
+            # for i in range(len(actor_gradient_batch) - 1):
+            #     for j in range(len(assembled_actor_gradient)):
             #             assembled_actor_gradient[j] += actor_gradient_batch[i][j]
             #             assembled_critic_gradient[j] += critic_gradient_batch[i][j]
             # actor.apply_gradients(assembled_actor_gradient)

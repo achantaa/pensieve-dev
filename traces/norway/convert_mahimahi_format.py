@@ -16,7 +16,7 @@ def main():
 		file_path = DATA_PATH +  f
 		output_path = OUTPUT_PATH + f
 
-		print file_path
+		print(file_path)
 
 		with open(file_path, 'rb') as f, open(output_path, 'wb') as mf:
 			time_ms = []
@@ -38,7 +38,7 @@ def main():
 			millisec_time = 0
 			mf.write(str(millisec_time) + '\n')
 
-			for i in xrange(len(throughput_all)):
+			for i in range(len(throughput_all)):
 
 				throughput = throughput_all[i]
 				
@@ -53,7 +53,7 @@ def main():
 					to_send = (millisec_count * pkt_per_millisec) - pkt_count
 					to_send = np.floor(to_send)
 
-					for i in xrange(int(to_send)):
+					for i in range(int(to_send)):
 						mf.write(str(millisec_time) + '\n')
 
 					pkt_count += to_send

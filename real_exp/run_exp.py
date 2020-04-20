@@ -19,7 +19,7 @@ def main():
 		log.write('chrome retry log\n')
 		log.flush()
 
-		for rt in xrange(REPEAT_TIME):
+		for rt in range(REPEAT_TIME):
 			np.random.shuffle(ABR_ALGO)
 			for abr_algo in ABR_ALGO:
 

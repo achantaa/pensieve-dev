@@ -25,7 +25,7 @@ def main():
 		file_path = DATA_PATH +  file
 		output_path = OUTPUT_PATH + file
 
-		print file_path
+		print(file_path)
 
 		mahimahi_win = []
 		with open(file_path, 'rb') as f:
@@ -41,13 +41,13 @@ def main():
 			if end_time * MILLISEC_IN_SEC > np.max(mahimahi_win): 
 				break
 
-			print "start time", start_time
+			print("start time", start_time)
 
 			start_ptr = find_nearest(mahimahi_win, start_time * MILLISEC_IN_SEC)
 			end_ptr = find_nearest(mahimahi_win, end_time * MILLISEC_IN_SEC)
 
 			with open(output_path + '_' + str(int(start_time)), 'wb') as f:
-				for i in xrange(start_ptr, end_ptr + 1):
+				for i in range(start_ptr, end_ptr + 1):
 					towrite = mahimahi_win[i] - mahimahi_win[start_ptr]
 					f.write(str(int(towrite)) + '\n')
 

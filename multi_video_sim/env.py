@@ -262,18 +262,18 @@ def main():
 		delay, sleep_time, buf, rebuf, chunk_size, done, \
 		num_chunk_remain, num_chunks, \
 		next_chunk_size, bitrate_mask = net_env.get_video_chunk(0)
-		print "delay", delay
-		print "sleep", sleep_time
-		print "buffer", buf
-		print "rebuffering", rebuf
-		print "chunk_size", chunk_size
-		print "num_chunk_remain", num_chunk_remain
-		print "num_chunks", num_chunks
-		print "next_chunk", next_chunk_size
-		print "mask", bitrate_mask
-		print "\n"
+		print("delay", delay)
+		print("sleep", sleep_time)
+		print("buffer", buf)
+		print("rebuffering", rebuf)
+		print("chunk_size", chunk_size)
+		print("num_chunk_remain", num_chunk_remain)
+		print("num_chunks", num_chunks)
+		print("next_chunk", next_chunk_size)
+		print("mask", bitrate_mask)
+		print("\n")
 
-		raw_input()
+		input()
 
 
 if __name__ == '__main__':

@@ -14,11 +14,11 @@ M_IN_B = 1000000.0
 
 video_chunk_sizes = []
 
-for bitrate in xrange(BITRATE_LEVELS):
+for bitrate in range(BITRATE_LEVELS):
 
 	video_chunk_sizes.append([])
 
-	for chunk_idx in xrange(1, TOTAL_VIDEO_CHUNCK + 1):
+	for chunk_idx in range(1, TOTAL_VIDEO_CHUNCK + 1):
 
 		video_chunk_path = VIDEO_SOURCE_FOLDER + \
 						   VIDEO_FOLDER + \
@@ -39,7 +39,7 @@ with open(VIDEO_OUTPUT_FOLDER + '0', 'wb') as f:
 	for m in MASK:
 		f.write(str(m) + '\t')
 	f.write('\n')
-	for chunk_idx in xrange(TOTAL_VIDEO_CHUNCK):
-		for i in xrange(BITRATE_LEVELS):
+	for chunk_idx in range(TOTAL_VIDEO_CHUNCK):
+		for i in range(BITRATE_LEVELS):
 			f.write(str(video_chunk_sizes[i][chunk_idx]) + '\t')
 		f.write('\n')

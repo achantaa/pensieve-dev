@@ -19,7 +19,7 @@ np.random.seed(RANDOM_SEED)
 all_bitrate_idx = np.array(range(MAX_NUM_BITRATES))
 mask_bitrate_idx_to_shuffle = np.array(range(MAX_NUM_BITRATES))
 
-for video_idx in xrange(NUM_VIDEOS):
+for video_idx in range(NUM_VIDEOS):
 	num_bitrates = np.random.randint(MIN_NUM_BITRATES, MAX_NUM_BITRATES + 1)
 	num_chunks = np.random.randint(MIN_NUM_CHUNKS, MAX_NUM_CHUNKS + 1)
 
@@ -36,15 +36,15 @@ for video_idx in xrange(NUM_VIDEOS):
 
 	with open(VIDEO_FOLDER + str(video_idx), 'wb') as f:
 		f.write(str(num_bitrates) + '\t' + str(num_chunks) + '\n')
-		for i in xrange(MAX_NUM_BITRATES):
+		for i in range(MAX_NUM_BITRATES):
 			if i in mask_bitrate_idx:
 				f.write('1' + '\t')
 			else:
 				f.write('0' + '\t')
 		f.write('\n')
 
-		for _ in xrange(num_chunks):
-			for i in xrange(num_bitrates):
+		for _ in range(num_chunks):
+			for i in range(num_bitrates):
 				mean = MEAN_VIDEO_SIZE[mask_bitrate_idx[i]]
 				noise = np.random.normal(1, STD_VIDEO_SIZE_NOISE)
 				f.write(str(mean * noise) + '\t')
