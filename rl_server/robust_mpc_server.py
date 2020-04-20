@@ -25,7 +25,7 @@ BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 TOTAL_VIDEO_CHUNKS = 48
 DEFAULT_QUALITY = 0  # default video quality without agent
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> this number of Mbps
+REBUF_PENALTY = 2.66  # 1 sec rebuffering -> this number of Mbps
 SMOOTH_PENALTY = 1
 TRAIN_SEQ_LEN = 100  # take as a train batch
 MODEL_SAVE_INTERVAL = 100
@@ -101,19 +101,19 @@ def make_request_handler(input_dict):
                 rebuffer_time = float(post_data['RebufferTime'] - self.input_dict['last_total_rebuf'])
 
                 # --linear reward--
-                reward = \
-                    VIDEO_BIT_RATE[post_data['lastquality']] / M_IN_K \
-                    - REBUF_PENALTY * rebuffer_time / M_IN_K\
-                    - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[post_data['lastquality']]
-                                              - self.input_dict['last_bit_rate']) / M_IN_K
+                # reward = \
+                #     VIDEO_BIT_RATE[post_data['lastquality']] / M_IN_K \
+                #     - REBUF_PENALTY * rebuffer_time / M_IN_K\
+                #     - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[post_data['lastquality']]
+                #                               - self.input_dict['last_bit_rate']) / M_IN_K
 
                 # --log reward--
-                # log_bit_rate = np.log(VIDEO_BIT_RATE[post_data['lastquality']] / float(VIDEO_BIT_RATE[0]))   
-                # log_last_bit_rate = np.log(self.input_dict['last_bit_rate'] / float(VIDEO_BIT_RATE[0]))
+                log_bit_rate = np.log(VIDEO_BIT_RATE[post_data['lastquality']] / float(VIDEO_BIT_RATE[0]))   
+                log_last_bit_rate = np.log(self.input_dict['last_bit_rate'] / float(VIDEO_BIT_RATE[0]))
 
-                # reward = log_bit_rate \
-                #          - 4.3 * rebuffer_time / M_IN_K \
-                #          - SMOOTH_PENALTY * np.abs(log_bit_rate - log_last_bit_rate)
+                reward = log_bit_rate \
+                         - 4.3 * rebuffer_time / M_IN_K \
+                         - SMOOTH_PENALTY * np.abs(log_bit_rate - log_last_bit_rate)
 
                 # --hd reward--
                 # reward = BITRATE_REWARD[post_data['lastquality']] \

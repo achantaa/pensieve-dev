@@ -17,7 +17,7 @@ VIDEO_BIT_RATE = [300, 750, 1200, 1850, 2850, 4300]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 48.0
 M_IN_K = 1000.0
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 2.66  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 42
@@ -25,7 +25,8 @@ RAND_RANGE = 1000
 SUMMARY_DIR = './results'
 LOG_FILE = './results/log_sim_rl'
 # log in format of time_stamp bit_rate buffer_size rebuffer_time chunk_size download_time reward
-NN_MODEL = './models/pretrain_linear_reward.ckpt'
+# NN_MODEL = './models/pretrain_linear_reward.ckpt'
+NN_MODEL = './models/nn_log_100k.ckpt'
 
 
 def main():

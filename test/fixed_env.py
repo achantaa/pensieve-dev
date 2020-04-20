@@ -155,11 +155,20 @@ class Environment:
         for i in range(BITRATE_LEVELS):
             next_video_chunk_sizes.append(self.video_size[i][self.video_chunk_counter])
 
+        # return delay, \
+        #     sleep_time, \
+        #     return_buffer_size / MILLISECONDS_IN_SECOND, \
+        #     rebuf / MILLISECONDS_IN_SECOND, \
+        #     video_chunk_size, \
+        #     next_video_chunk_sizes, \
+        #     end_of_video, \
+        #     video_chunk_remain
+
+        # MPC Return
         return delay, \
             sleep_time, \
             return_buffer_size / MILLISECONDS_IN_SECOND, \
             rebuf / MILLISECONDS_IN_SECOND, \
             video_chunk_size, \
-            next_video_chunk_sizes, \
             end_of_video, \
             video_chunk_remain

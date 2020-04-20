@@ -16,7 +16,7 @@ BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
 BITRATE_REWARD_MAP = {0: 0, 300: 1, 750: 2, 1200: 3, 1850: 12, 2850: 15, 4300: 20}
 M_IN_K = 1000.0
 DEFAULT_QUALITY = 0  # default video quality without agent
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> this number of Mbps
+REBUF_PENALTY = 2.66  # 1 sec rebuffering -> this number of Mbps
 SMOOTH_PENALTY = 1
 TOTAL_VIDEO_CHUNKS = 48
 SUMMARY_DIR = './results'
@@ -42,11 +42,20 @@ def make_request_handler(input_dict):
 
             if 'lastquality' in post_data:
                 rebuffer_time = float(post_data['RebufferTime'] - self.input_dict['last_total_rebuf'])
-                reward = \
-                    VIDEO_BIT_RATE[post_data['lastquality']] / M_IN_K \
-                    - REBUF_PENALTY * (post_data['RebufferTime'] - self.input_dict['last_total_rebuf']) / M_IN_K \
-                    - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[post_data['lastquality']] -
-                                              self.input_dict['last_bit_rate']) / M_IN_K
+                # reward = \
+                #     VIDEO_BIT_RATE[post_data['lastquality']] / M_IN_K \
+                #     - REBUF_PENALTY * (post_data['RebufferTime'] - self.input_dict['last_total_rebuf']) / M_IN_K \
+                #     - SMOOTH_PENALTY * np.abs(VIDEO_BIT_RATE[post_data['lastquality']] -
+                #                               self.input_dict['last_bit_rate']) / M_IN_K
+                
+                # --log reward--
+                log_bit_rate = np.log(VIDEO_BIT_RATE[post_data['lastquality']] / float(VIDEO_BIT_RATE[0]))   
+                log_last_bit_rate = np.log(self.input_dict['last_bit_rate'] / float(VIDEO_BIT_RATE[0]))
+
+                reward = log_bit_rate \
+                         - REBUF_PENALTY * rebuffer_time / M_IN_K \
+                         - SMOOTH_PENALTY * np.abs(log_bit_rate - log_last_bit_rate)
+
                 # reward = BITRATE_REWARD[post_data['lastquality']] \
                 #         - 8 * rebuffer_time / M_IN_K - np.abs(BITRATE_REWARD[post_data['lastquality']]
                 #         - BITRATE_REWARD_MAP[self.input_dict['last_bit_rate']])

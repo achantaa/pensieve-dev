@@ -19,7 +19,7 @@ VIDEO_BIT_RATE = [200,300,450,750,1200,1850,2850,4300,6000,8000]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 M_IN_K = 1000.0
 M_IN_B = 1000000.0
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 2.66  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 42
@@ -140,7 +140,7 @@ def main():
             state[4, -1] = video_chunk_remain / float(video_num_chunks)
             state[5, :] = -1
             nxt_chnk_cnt = 0
-            for i in xrange(A_DIM):
+            for i in range(A_DIM):
                 if mask[i] == 1:
                     state[5, i] = next_video_chunk_size[nxt_chnk_cnt] / M_IN_B
                     nxt_chnk_cnt += 1

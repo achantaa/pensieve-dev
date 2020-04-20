@@ -20,7 +20,7 @@ VIDEO_BIT_RATE = [200,300,450,750,1200,1850,2850,4300,6000,8000]  # Kbps
 BUFFER_NORM_FACTOR = 10.0
 M_IN_K = 1000.0
 M_IN_B = 1000000.0
-REBUF_PENALTY = 4.3  # 1 sec rebuffering -> 3 Mbps
+REBUF_PENALTY = 2.66  # 1 sec rebuffering -> 3 Mbps
 SMOOTH_PENALTY = 1
 DEFAULT_QUALITY = 1  # default video quality without agent
 RANDOM_SEED = 42
@@ -138,7 +138,7 @@ def central_agent(net_params_queues, exp_queues):
             # synchronize the network parameters of work agent
             actor_net_params = actor.get_network_params()
             critic_net_params = critic.get_network_params()
-            for i in xrange(NUM_AGENTS):
+            for i in range(NUM_AGENTS):
                 net_params_queues[i].put([actor_net_params, critic_net_params])
 
             # record average reward and td loss change
@@ -153,7 +153,7 @@ def central_agent(net_params_queues, exp_queues):
             actor_gradient_batch = []
             critic_gradient_batch = []
 
-            for i in xrange(NUM_AGENTS):
+            for i in range(NUM_AGENTS):
                 s_batch, a_batch, r_batch, terminal, info = exp_queues[i].get()
 
                 actor_gradient, critic_gradient, td_batch = \
@@ -163,7 +163,7 @@ def central_agent(net_params_queues, exp_queues):
                         r_batch=np.vstack(r_batch),
                         terminal=terminal, actor=actor, critic=critic)
 
-                for i in xrange(len(actor_gradient)):
+                for i in range(len(actor_gradient)):
                     assert np.any(np.isnan(actor_gradient[i])) == False
 
                 actor_gradient_batch.append(actor_gradient)
@@ -180,13 +180,13 @@ def central_agent(net_params_queues, exp_queues):
             assert len(actor_gradient_batch) == len(critic_gradient_batch)
             # assembled_actor_gradient = actor_gradient_batch[0]
             # assembled_critic_gradient = critic_gradient_batch[0]
-            # for i in xrange(len(actor_gradient_batch) - 1):
-            #     for j in xrange(len(assembled_actor_gradient)):
+            # for i in range(len(actor_gradient_batch) - 1):
+            #     for j in range(len(assembled_actor_gradient)):
             #             assembled_actor_gradient[j] += actor_gradient_batch[i][j]
             #             assembled_critic_gradient[j] += critic_gradient_batch[i][j]
             # actor.apply_gradients(assembled_actor_gradient)
             # critic.apply_gradients(assembled_critic_gradient)
-            for i in xrange(len(actor_gradient_batch)):
+            for i in range(len(actor_gradient_batch)):
                 actor.apply_gradients(actor_gradient_batch[i])
                 critic.apply_gradients(critic_gradient_batch[i])
 
@@ -296,7 +296,7 @@ def agent(agent_id, net_params_queue, exp_queue):
             state[4, -1] = video_chunk_remain / float(video_num_chunks)
             state[5, :] = -1
             nxt_chnk_cnt = 0
-            for i in xrange(A_DIM):
+            for i in range(A_DIM):
                 if mask[i] == 1:
                     state[5, i] = next_video_chunk_size[nxt_chnk_cnt] / M_IN_B
                     nxt_chnk_cnt += 1
@@ -377,7 +377,7 @@ def main():
     # inter-process communication queues
     net_params_queues = []
     exp_queues = []
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         net_params_queues.append(mp.Queue(1))
         exp_queues.append(mp.Queue(1))
 
@@ -388,12 +388,12 @@ def main():
     coordinator.start()
 
     agents = []
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         agents.append(mp.Process(target=agent,
                                  args=(i,
                                        net_params_queues[i],
                                        exp_queues[i])))
-    for i in xrange(NUM_AGENTS):
+    for i in range(NUM_AGENTS):
         agents[i].start()
 
     # wait unit training is done

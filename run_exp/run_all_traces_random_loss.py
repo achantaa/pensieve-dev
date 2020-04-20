@@ -23,7 +23,7 @@ os.system('sudo sysctl -w net.ipv4.ip_forward=1')
 ip = 'localhost'
 files = os.listdir(TRACE_PATH)
 for f in files:
-    loss = np.random.randint(1, 20) * 0.001    # introduce random loss between [0.01%, 2.0%)
+    loss = np.random.randint(1, 20) * 0.001    # introduce random loss between [0.1%, 2.0%)
 
     ABR_ALGO = 'BB'
     PROCESS_ID = 0
