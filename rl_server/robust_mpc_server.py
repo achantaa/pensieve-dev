@@ -112,12 +112,12 @@ def make_request_handler(input_dict):
                 log_last_bit_rate = np.log(self.input_dict['last_bit_rate'] / float(VIDEO_BIT_RATE[0]))
 
                 reward = log_bit_rate \
-                         - 4.3 * rebuffer_time / M_IN_K \
+                         - REBUF_PENALTY * rebuffer_time / M_IN_K \
                          - SMOOTH_PENALTY * np.abs(log_bit_rate - log_last_bit_rate)
 
                 # --hd reward--
                 # reward = BITRATE_REWARD[post_data['lastquality']] \
-                #         - 8 * rebuffer_time / M_IN_K - np.abs(BITRATE_REWARD[post_data['lastquality']]
+                #         - REBUF_PENALTY * rebuffer_time / M_IN_K - np.abs(BITRATE_REWARD[post_data['lastquality']]
                 #         - BITRATE_REWARD_MAP[self.input_dict['last_bit_rate']])
 
                 self.input_dict['last_bit_rate'] = VIDEO_BIT_RATE[post_data['lastquality']]
@@ -235,27 +235,27 @@ def make_request_handler(input_dict):
                         # smoothness_diffs += abs(VIDEO_BIT_RATE[chunk_quality] - VIDEO_BIT_RATE[last_quality])
 
                         # log reward
-                        # log_bit_rate = np.log(VIDEO_BIT_RATE[chunk_quality] / float(VIDEO_BIT_RATE[0]))
-                        # log_last_bit_rate = np.log(VIDEO_BIT_RATE[last_quality] / float(VIDEO_BIT_RATE[0]))
-                        # bitrate_sum += log_bit_rate
-                        # smoothness_diffs += abs(log_bit_rate - log_last_bit_rate)
+                        log_bit_rate = np.log(VIDEO_BIT_RATE[chunk_quality] / float(VIDEO_BIT_RATE[0]))
+                        log_last_bit_rate = np.log(VIDEO_BIT_RATE[last_quality] / float(VIDEO_BIT_RATE[0]))
+                        bitrate_sum += log_bit_rate
+                        smoothness_diffs += abs(log_bit_rate - log_last_bit_rate)
 
                         # hd reward
-                        bitrate_sum += BITRATE_REWARD[chunk_quality]
-                        smoothness_diffs += abs(BITRATE_REWARD[chunk_quality] - BITRATE_REWARD[last_quality])
+                        # bitrate_sum += BITRATE_REWARD[chunk_quality]
+                        # smoothness_diffs += abs(BITRATE_REWARD[chunk_quality] - BITRATE_REWARD[last_quality])
 
                         last_quality = chunk_quality
                     # compute reward for this combination (one reward per 5-chunk combo)
                     # bitrates are in Mbits/s, rebuffer in seconds, and smoothness_diffs in Mbits/s
                     
                     # linear reward 
-                    # reward = (bitrate_sum/1000.) - (4.3*curr_rebuffer_time) - (smoothness_diffs/1000.)
+                    # reward = (bitrate_sum/1000.) - (REBUF_PENALTY*curr_rebuffer_time) - (smoothness_diffs/1000.)
 
                     # log reward
-                    # reward = (bitrate_sum) - (4.3*curr_rebuffer_time) - (smoothness_diffs)
+                    reward = (bitrate_sum) - (REBUF_PENALTY*curr_rebuffer_time) - (smoothness_diffs)
 
                     # hd reward
-                    reward = bitrate_sum - (8*curr_rebuffer_time) - smoothness_diffs
+                    # reward = bitrate_sum - (REBUF_PENALTY*curr_rebuffer_time) - smoothness_diffs
 
                     if reward > max_reward:
                         max_reward = reward
